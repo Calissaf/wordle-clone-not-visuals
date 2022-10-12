@@ -1,4 +1,5 @@
 const {createPool} = require('mysql');
+const prompt = require('prompt-sync')();
 
 const pool = createPool({
     host: "127.0.0.1",
@@ -58,7 +59,6 @@ function generateComputerChoice() {
 }
 
 function generateUserChoice() {
-    const prompt = require('prompt-sync')();
     const userInput = prompt("Enter a 5 letter word: ");
 
     let wordID = 0;
@@ -69,7 +69,7 @@ function generateUserChoice() {
 
     if (userInput.length == 5 && onlyLetters(userInput)) {
         userInput.toLowerCase();
-        let checkWordAllowedQuery = `SELECT id FROM wordlist.words WHERE word = "${userInput}";`;
+        let checkWordAllowedQuery = `SELECT IFNULL((SELECT id FROM wordlist.words WHERE word = "${userInput}"), 0) AS id;`;
 
         // console.log(`user input: ${userInput}`);
 
@@ -81,16 +81,18 @@ function generateUserChoice() {
 
             var data = JSON.parse(JSON.stringify(result));
 
-            console.log(data[0].id);
-            if (data[0].id != null)
-            {
-                wordID = parseInt(data[0].id);
-            }
+            //console.log(data);
+            wordID = parseInt(data[0].id);
 
+            checkWordID();
         })
 
-        console.log(`word id: ${wordID}`)
-    
+    } else {
+        console.log("input doesn't meet requirements");
+        generateUserChoice();
+    }
+
+    function checkWordID() {
         if (wordID > 0) {
             userChoice = userInput;
             attemps++;
@@ -98,12 +100,8 @@ function generateUserChoice() {
             console.log(`attemps: ${attemps}`);
         } else {
             console.log("word not recognised");
-            //generateUserChoice();
-        }
-
-    } else {
-        console.log("input doesn't meet requirements");
-        //generateUserChoice();
+            generateUserChoice();
+        } 
     }
 
 }
@@ -112,7 +110,7 @@ function onlyLetters(checkString) {
     return /^[A-Za-z]+$/.test(checkString); 
 }
 
-generateComputerChoice();
-//generateUserChoice();
+//generateComputerChoice();
+generateUserChoice();
 
 
