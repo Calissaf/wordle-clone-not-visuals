@@ -54,6 +54,7 @@ function generateComputerChoice() {
             console.log(`computer choice result: ${data[0].word}`)
             computerChoice = data[0].word;
             //return computerChoice;
+            generateUserChoice();
         })
     }
 }
@@ -69,7 +70,7 @@ function generateUserChoice() {
 
     if (userInput.length == 5 && onlyLetters(userInput)) {
         userInput.toLowerCase();
-        let checkWordAllowedQuery = `SELECT IFNULL((SELECT id FROM wordlist.words WHERE word = "${userInput}"), 0) AS id;`;
+        let checkWordAllowedQuery = `SELECT IFNULL((SELECT id FROM wordlist.allowed_words WHERE word = "${userInput}"), 0) AS id;`;
 
         // console.log(`user input: ${userInput}`);
 
@@ -96,8 +97,9 @@ function generateUserChoice() {
         if (wordID > 0) {
             userChoice = userInput;
             attemps++;
-            console.log(`user choice: ${userChoice}`);
+            // console.log(`user choice: ${userChoice}`);
             console.log(`attemps: ${attemps}`);
+            checkWin();
         } else {
             console.log("word not recognised");
             generateUserChoice();
@@ -110,7 +112,65 @@ function onlyLetters(checkString) {
     return /^[A-Za-z]+$/.test(checkString); 
 }
 
-//generateComputerChoice();
-generateUserChoice();
+function checkWin() {
+    //console.log(`user choice: ${userChoice}`)
+    //console.log(`computer choice: ${computerChoice}`)
+
+    if (userChoice === computerChoice){
+        console.log("Winner!!");
+        console.log(`You took ${attemps} attemps`);
+        return;
+    }
+
+    let sumTotal = 0;
+    let userChoiceArray = Array.from(userChoice);
+    let computerChoiceArray = Array.from(computerChoice);
+    let winPositions = [0,0,0,0,0];
+    let winPositionColors = ["grey", "grey", "grey", "grey", "grey"];
+    let checkedLetters = ["", "", "", "", ""];
+
+    for (let i = 0; i < userChoiceArray.length; i++) {
+        if(userChoiceArray[i] === computerChoiceArray[i]){
+            winPositions[i] = 2;
+            winPositionColors[i] = "green";
+            if (checkedLetters.includes(userChoiceArray[i]) == false) {
+                checkedLetters[i] = userChoiceArray[i];
+            }
+        }
+    }
+
+    console.log(`checked chars: ${checkedLetters}`)
+
+    for (let j = 0; j < userChoiceArray.Length; j++) {
+        let letterOccurencesInComputerChoice = (computerChoice.match(/userChoiceArray[i]/g) || []).length;
+        
+        if (computerChoice.includes(userChoiceArray[j]) && checkedLetters.includes(userChoiceArray[j]) == false || computerChoice.includes(userChoiceArray[j]) && checkedLetters.includes(userChoiceArray[j]) == true && letterOccurencesInComputerChoice > 1 && winPositions[j] == 0) {
+            winPositions[j] = 1;
+            winPositionColors[j] = "yellow";
+        }
+
+        sumTotal += winPositions[j];
+    }
+    
+    console.log(`sum total: ${sumTotal}`);
+    console.log(`win positions: ${winPositions}`);
+    console.log(`letter: ${userChoiceArray}\n color: ${winPositionColors}`);
+
+    if (sumTotal == 10)
+            {
+                console.log("Winner!!");
+                return;
+            } else if (attemps < maxAttempts) {
+                console.log(`${attemps} attempt, ${(maxAttempts - attemps)} attemps remaining`);
+                generateUserChoice();
+                checkWin();
+            } else {
+                console.log(`no attempts left word was: ${computerChoice}`);
+                return;
+            }
+
+}
+
+generateComputerChoice();
 
 
