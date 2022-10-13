@@ -11,7 +11,7 @@ const pool = createPool({
 let userChoice = "";
 let computerChoice = "";
 let attemps = 0;
-let maxAttempts = 5;
+let maxAttempts = 6;
 
 function generateComputerChoice() {
     let wordCount = 0;
