@@ -15,7 +15,7 @@ let maxAttempts = 5;
 
 function generateComputerChoice() {
     let wordCount = 0;
-    let wordCountQuery = `SELECT COUNT(id) AS word_count FROM wordlist.words`; // change to allowed_words when finished
+    let wordCountQuery = `SELECT COUNT(id) AS word_count FROM wordlist.allowed_words`; // change to allowed_words when finished
     let randomNumberChoice = 0;
 
     pool.query(wordCountQuery, (err, result) => {
@@ -40,7 +40,7 @@ function generateComputerChoice() {
 
     function findRandomWord () {
 
-        let computerChoiceQuery = `SELECT word FROM wordlist.words WHERE id = ${randomNumberChoice}`;
+        let computerChoiceQuery = `SELECT word FROM wordlist.allowed_words WHERE id = ${randomNumberChoice}`;
 
         pool.query(computerChoiceQuery, (err, result) => {
             if (err) {
@@ -141,7 +141,7 @@ function checkWin() {
 
     console.log(`checked chars: ${checkedLetters}`)
 
-    for (let j = 0; j < userChoiceArray.Length; j++) {
+    for (let j = 0; j < userChoiceArray.length; j++) {
         let letterOccurencesInComputerChoice = (computerChoice.match(/userChoiceArray[i]/g) || []).length;
         
         if (computerChoice.includes(userChoiceArray[j]) && checkedLetters.includes(userChoiceArray[j]) == false || computerChoice.includes(userChoiceArray[j]) && checkedLetters.includes(userChoiceArray[j]) == true && letterOccurencesInComputerChoice > 1 && winPositions[j] == 0) {
@@ -150,11 +150,10 @@ function checkWin() {
         }
 
         sumTotal += winPositions[j];
+        
     }
     
-    console.log(`sum total: ${sumTotal}`);
-    console.log(`win positions: ${winPositions}`);
-    console.log(`letter: ${userChoiceArray}\n color: ${winPositionColors}`);
+    console.log(`letter: ${userChoiceArray}\ncolor: ${winPositionColors}`);
 
     if (sumTotal == 10)
             {
@@ -163,7 +162,6 @@ function checkWin() {
             } else if (attemps < maxAttempts) {
                 console.log(`${attemps} attempt, ${(maxAttempts - attemps)} attemps remaining`);
                 generateUserChoice();
-                checkWin();
             } else {
                 console.log(`no attempts left word was: ${computerChoice}`);
                 return;
