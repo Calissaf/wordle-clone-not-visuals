@@ -25,7 +25,6 @@ function generateComputerChoice() {
         }
 
         var data = JSON.parse(JSON.stringify(result));
-        // console.log(`data ${data[0].word_count}`);
         wordCount = parseInt(data[0].word_count);
 
         findRandomNumber();
@@ -34,8 +33,6 @@ function generateComputerChoice() {
 
     function findRandomNumber() {
         randomNumberChoice = Math.floor(Math.random() *  wordCount) + 1;
-        // console.log(`column length ${columnLength}`);
-        // console.log(`random number choice ${randomNumberChoice}`);  
     }
 
     function findRandomWord () {
@@ -47,13 +44,10 @@ function generateComputerChoice() {
                 console.log(err);
                 throw err;
             }
-    
-            //console.log(result);
-    
+        
             var data = JSON.parse(JSON.stringify(result));
-            console.log(`computer choice result: ${data[0].word}`)
+            // console.log(`computer choice result: ${data[0].word}`)
             computerChoice = data[0].word;
-            //return computerChoice;
             generateUserChoice();
         })
     }
@@ -64,15 +58,9 @@ function generateUserChoice() {
 
     let wordID = 0;
 
-    // console.log(`user input: ${userInput}`);
-    // console.log(`user input length: ${userInput.length}`);
-    // console.log(`regex: ${onlyLetters(userInput)}`);
-
     if (userInput.length == 5 && onlyLetters(userInput)) {
         userInput.toLowerCase();
         let checkWordAllowedQuery = `SELECT IFNULL((SELECT id FROM wordlist.allowed_words WHERE word = "${userInput}"), 0) AS id;`;
-
-        // console.log(`user input: ${userInput}`);
 
         pool.query(checkWordAllowedQuery, (err, result) => {
             if (err) {
@@ -82,7 +70,6 @@ function generateUserChoice() {
 
             var data = JSON.parse(JSON.stringify(result));
 
-            //console.log(data);
             wordID = parseInt(data[0].id);
 
             checkWordID();
@@ -97,8 +84,6 @@ function generateUserChoice() {
         if (wordID > 0) {
             userChoice = userInput;
             attemps++;
-            // console.log(`user choice: ${userChoice}`);
-            console.log(`attemps: ${attemps}`);
             checkWin();
         } else {
             console.log("word not recognised");
@@ -113,8 +98,6 @@ function onlyLetters(checkString) {
 }
 
 function checkWin() {
-    //console.log(`user choice: ${userChoice}`)
-    //console.log(`computer choice: ${computerChoice}`)
 
     if (userChoice === computerChoice){
         console.log("Winner!!");
@@ -139,8 +122,6 @@ function checkWin() {
         }
     }
 
-    console.log(`checked chars: ${checkedLetters}`)
-
     for (let j = 0; j < userChoiceArray.length; j++) {
         let letterOccurencesInComputerChoice = (computerChoice.match(/userChoiceArray[i]/g) || []).length;
         
@@ -151,10 +132,9 @@ function checkWin() {
 
         sumTotal += winPositions[j];
         
+        console.log(`${userChoiceArray[j]}\ : ${winPositionColors[j]}`);
     }
     
-    console.log(`letter: ${userChoiceArray}\ncolor: ${winPositionColors}`);
-
     if (sumTotal == 10)
             {
                 console.log("Winner!!");
