@@ -55,11 +55,12 @@ function generateComputerChoice() {
 
 function generateUserChoice() {
     const userInput = prompt("Enter a 5 letter word: ");
+    let tempUserInputStore = "";
 
     let wordID = 0;
 
     if (userInput.length == 5 && onlyLetters(userInput)) {
-        userInput.toLowerCase();
+        tempUserInputStore = userInput.toLowerCase();
         let checkWordAllowedQuery = `SELECT IFNULL((SELECT id FROM wordlist.allowed_words WHERE word = "${userInput}"), 0) AS id;`;
 
         pool.query(checkWordAllowedQuery, (err, result) => {
@@ -82,7 +83,7 @@ function generateUserChoice() {
 
     function checkWordID() {
         if (wordID > 0) {
-            userChoice = userInput;
+            userChoice = tempUserInputStore;
             attemps++;
             checkWin();
         } else {
